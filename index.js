@@ -14,7 +14,7 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
   },
 });
-
+app.use(cors());
 app.use(express.json());
 
 // Handle socket connections
@@ -92,7 +92,6 @@ app.post("/dispatch-created", (req, res) => {
 
   res.sendStatus(200);
 });
-
 //Handle approved but not dispatched updates (dont include)
 app.post("/dispatch-approved-but-not-dispatched", (req, res) => {
   console.log("Approved but not Dispatched:", req.body); // Log incoming request
@@ -188,6 +187,24 @@ app.post("/dispatcher-paid", (req, res) => {
   console.log("Dispatcher Paid:", data);
 
   io.emit("dispatcher-paid", data);
+
+  res.sendStatus(200);
+});
+
+// Handle Reservation Cancel
+app.post("/reservation-cancelled", (req, res) => {
+  const { dispatch_id, user_id, seat_positions } = req.body;
+  console.log("Reservation Cancelled:", {
+    dispatch_id,
+    user_id,
+    seat_positions,
+  });
+
+  io.emit("reservation-cancelled", {
+    dispatch_id,
+    user_id,
+    seat_positions,
+  });
 
   res.sendStatus(200);
 });
