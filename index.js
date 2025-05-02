@@ -21,6 +21,15 @@ app.use(express.json());
 io.on("connection", (socket) => {
   console.log("New client connected: " + socket.id);
 
+  socket.on("joinRoom", (userId, role) => {
+    // For example, the room can be named based on the user's role or user ID
+    const room = role + ":" + userId;
+    userSockets[socket.id] = { userId, role, room };
+
+    // Join the appropriate room
+    socket.join(room);
+    console.log(`${userId} with role ${role} joined room: ${room}`);
+  });
   // Listening for incoming "send-message" event
   socket.on("send-message", (data) => {
     console.log("Received message:", data);
@@ -207,6 +216,19 @@ app.post("/reservation-cancelled", (req, res) => {
   });
 
   res.sendStatus(200);
+});
+
+//listen to new notif
+app.post("/message", (req, res) => {
+  const { event, data } = req.body;
+
+  if (event && data) {
+    io.emit(event, data); // emit to all
+    console.log(`Emitting ${event}:`, data);
+    res.json({ status: "ok" });
+  } else {
+    res.status(400).json({ error: "Invalid event or data" });
+  }
 });
 
 // Start the server
