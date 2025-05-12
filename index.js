@@ -232,6 +232,13 @@ app.post("/message", (req, res) => {
 });
 
 // Start the server
+// const PORT = process.env.PORT || 6001;
+// server.listen(PORT, () => {
+//   console.log(`Socket.IO server running on port ${PORT}`);
+// });
+
+
+
 server.listen(6001, () => {
   console.log("Socket.IO server running on port 6001");
 });
