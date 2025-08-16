@@ -4,6 +4,7 @@ const http = require("http");
 const cors = require("cors");
 
 const app = express();
+const path = require('path');
 const server = http.createServer(app);
 
 const allowedOrigins = ["*"];
@@ -16,6 +17,88 @@ const io = new Server(server, {
 });
 app.use(cors());
 app.use(express.json());
+
+// Serve static files from the public directory
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Main route to serve a simple HTML page
+app.get('/', (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Socket Server Page</title>
+        <style>
+          body {
+            background: linear-gradient(135deg, #101c10 0%, #1a2e1a 100%);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          .container {
+            background: #181f18;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+            border-radius: 18px;
+            padding: 44px 36px;
+            text-align: center;
+            max-width: 420px;
+            border: 1px solid #2e7d32;
+          }
+          .logo {
+            max-width: 120px;
+            margin-bottom: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(46,125,50,0.15);
+            border: 2px solid #43a047;
+          }
+          h1 {
+            color: #43a047;
+            font-size: 2.2rem;
+            margin-bottom: 18px;
+            letter-spacing: 1px;
+          }
+          p {
+            color: #b9f6ca;
+            font-size: 1.15rem;
+            margin-bottom: 28px;
+          }
+          .btn {
+            display: inline-block;
+            background: linear-gradient(90deg, #43a047 0%, #00e676 100%);
+            color: #181f18;
+            padding: 13px 32px;
+            border-radius: 9px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.05rem;
+            box-shadow: 0 2px 8px rgba(0,230,118,0.12);
+            transition: background 0.2s, color 0.2s;
+            border: none;
+          }
+          .btn:hover {
+            background: linear-gradient(90deg, #388e3c 0%, #00c853 100%);
+            color: #fff;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <img src="/logo.png" alt="Logo" class="logo" />
+          <h1>Socket Server</h1>
+          <p>Welcome to the <strong>Socket Server of BATODA</strong>.<br>
+          This page is static for visualization.</p>
+
+        </div>
+      </body>
+    </html>
+  `);
+});
 
 // Handle socket connections
 io.on("connection", (socket) => {
@@ -241,4 +324,5 @@ app.post("/message", (req, res) => {
 
 server.listen(6001, () => {
   console.log("Socket.IO server running on port 6001");
+  console.log("Web page available at http://localhost:6001/");
 });
